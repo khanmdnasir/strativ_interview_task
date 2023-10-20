@@ -126,14 +126,17 @@ USE_TZ = True
 
 #celery settings 
 CELERY_BROKER_URL = f'redis://{os.environ.get("REDIS_URL")}:6379'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = f'redis://{os.environ.get("REDIS_URL")}:6379'
+CELERY_TASK_ALWAYS_EAGER  = True
 CELERY_TIMEZONE = 'Asia/Dhaka'
-CELERY_TEST_MESSAGE='Celery Succesfully Working'
 
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    'daily_task': {
+        'task': 'app.tasks.daily_task',  
+        'schedule': crontab(minute=24, hour=20),  # Runs daily at midnight
+    },
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
