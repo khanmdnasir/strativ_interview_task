@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+  backend:
+    build:
+      context: .
+    container_name: strativ_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - static_volume:/app/static
+    ports:
+      - "${WEB_PORT}:8000"
+
+  redis:
+    image: redis
+    ports:
+      - "${REDIS_PORT}:6379"
+  
+  celery_worker:
+    restart: always
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A main worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - backend
+      
+  celery_beat_schedular:
+    restart: always
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A main beat -l info 
+    volumes:
+      - .:/app
+    depends_on:
+      - backend
+      - redis
+      - celery_worker
+
+volumes:
+  static_volume:
