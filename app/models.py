@@ -10,3 +10,16 @@ class District(models.Model):
     
     def __str__(self):
         return self.name
+    
+class DistrictTemperature(models.Model):
+    district = models.ForeignKey(District,on_delete=models.CASCADE)
+    date = models.CharField(max_length=50)
+    temp = models.DecimalField(max_digits=3,decimal_places=1)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['district','date'])
+        ]
+    def __str__(self):
+        return str(self.district.id)+' '+self.district.name+' - '+self.date
+    

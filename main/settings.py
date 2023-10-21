@@ -134,7 +134,7 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'daily_task': {
         'task': 'app.tasks.daily_task',  
-        'schedule': crontab(minute=24, hour=20),  # Runs daily at midnight
+        'schedule': crontab(minute=0, hour=0),  # Runs daily at midnight
     },
 }
 
